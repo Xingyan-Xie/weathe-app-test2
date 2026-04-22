@@ -305,10 +305,8 @@
     </div>
 
     <script>
-
         const API_KEY = '5fbc8bc590ae855685c7c9d3f3a7f19c';
 
-        // DOM Elements
         const cityInput = document.getElementById('city-input');
         const searchBtn = document.getElementById('search-btn');
         const locationBtn = document.getElementById('location-btn');
@@ -319,9 +317,16 @@
         const historyList = document.getElementById('history-list');
         const body = document.body;
 
-        // --------------------------
-        // CRUD Operations (LocalStorage)
-        // --------------------------
+        searchBtn.addEventListener('click', () => {
+            const city = cityInput.value.trim();
+            if (city) getWeatherData(city);
+            else showError("Please enter a city name");
+        });
+
+        locationBtn.addEventListener('click', getLocationWeather);
+        historyBtn.addEventListener('click', toggleHistory);
+        exportBtn.addEventListener('click', exportToCSV);
+
         function saveSearchRecord(city, weatherData) {
             const records = JSON.parse(localStorage.getItem('weatherRecords')) || [];
             const newRecord = {
@@ -368,9 +373,15 @@
             `).join('');
         }
 
-        // --------------------------
-        // CSV Export Function
-        // --------------------------
+        function toggleHistory() {
+            if (historyContainer.style.display === 'none') {
+                renderHistory();
+                historyContainer.style.display = 'block';
+            } else {
+                historyContainer.style.display = 'none';
+            }
+        }
+
         function exportToCSV() {
             const records = getSearchRecords();
             if (records.length === 0) {
@@ -390,9 +401,6 @@
             window.URL.revokeObjectURL(url);
         }
 
-        // --------------------------
-        // OpenStreetMap API Integration
-        // --------------------------
         function renderCityMap(lat, lon) {
             return `
                 <div class="map-container">
@@ -401,9 +409,6 @@
             `;
         }
 
-        // --------------------------
-        // Weather Background & UI
-        // --------------------------
         function setBackground(weatherMain) {
             const backgrounds = {
                 'Clear': 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
@@ -424,57 +429,90 @@
             weatherContainer.innerHTML = `<div class="loading">Fetching weather data...</div>`;
         }
 
-        // --------------------------
-        // Weather API Functions
-        // --------------------------
+        function handleApiError(err) {
+            showError(err.message || 'Failed to load weather data');
+        }
+
         function getLocationWeather() {
             if (!navigator.geolocation) {
-                showError('Geolocation is not supported by your browser');
+                showError('Geolocation is not supported');
                 return;
             }
             showLoading();
             navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const lat = position.coords.latitude;
-                    const lon = position.coords.longitude;
+                pos => {
+                    const lat = pos.coords.latitude;
+                    const lon = pos.coords.longitude;
                     getWeatherByCoords(lat, lon);
                 },
-                (error) => {
-                    switch(error.code) {
-                        case error.PERMISSION_DENIED:
-                            showError('Location permission denied. Please enter a city manually');
-                            break;
-                        case error.POSITION_UNAVAILABLE:
-                            showError('Location information unavailable. Please enter a city manually');
-                            break;
-                        case error.TIMEOUT:
-                            showError('Location request timed out. Please enter a city manually');
-                            break;
-                        default:
-                            showError('Failed to get location. Please enter a city manually');
-                    }
+                err => {
+                    showError('Location access denied. Please allow location permission.');
                 }
             );
         }
 
         async function getWeatherByCoords(lat, lon) {
-            showLoading();
             try {
-                const currentRes = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric&lang=en`);
-                if (!currentRes.ok) throw new Error('Failed to fetch weather data');
-                const currentData = await currentRes.json();
-
-                const forecastRes = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric&lang=en`);
-                if (!forecastRes.ok) throw new Error('Failed to fetch forecast data');
+                const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric&lang=en`);
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.message || 'Error');
+                
+                const forecastRes = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`);
                 const forecastData = await forecastRes.json();
-
-                renderWeather(currentData, forecastData);
-            } catch (error) {
-                handleApiError(error);
+                
+                renderWeather(data, forecastData);
+                saveSearchRecord(data.name, data);
+            } catch (e) {
+                handleApiError(e);
             }
         }
 
         async function getWeatherData(city) {
             showLoading();
             try {
-                const currentRes = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric&lang=en
+                const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric&lang=en`);
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.message || 'City not found');
+
+                const forecastRes = await fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${API_KEY}&units=metric`);
+                const forecastData = await forecastRes.json();
+
+                renderWeather(data, forecastData);
+                saveSearchRecord(city, data);
+            } catch (e) {
+                handleApiError(e);
+            }
+        }
+
+        function renderWeather(data, forecast) {
+            setBackground(data.weather[0].main);
+            weatherContainer.innerHTML = `
+                <div class="weather-card">
+                    <div class="city-name">${data.name}, ${data.sys.country}</div>
+                    <img class="weather-icon" src="https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png">
+                    <div class="temperature">${Math.round(data.main.temp)}°C</div>
+                    <div class="weather-desc">${data.weather[0].description}</div>
+                    <div class="weather-details">
+                        <div class="detail-item">Humidity ${data.main.humidity}%</div>
+                        <div class="detail-item">Wind ${data.wind.speed} m/s</div>
+                        <div class="detail-item">Feels like ${Math.round(data.main.feels_like)}°C</div>
+                    </div>
+                    ${renderCityMap(data.coord.lat, data.coord.lon)}
+                </div>
+
+                <div class="forecast-title">5-Day Forecast</div>
+                <div class="forecast-container">
+                    ${forecast.list.filter((_, i) => i % 8 === 0).map(item => `
+                        <div class="forecast-day">
+                            <div class="date">${new Date(item.dt_txt).toLocaleDateString()}</div>
+                            <img src="https://openweathermap.org/img/wn/${item.weather[0].icon}.png">
+                            <div class="temp">${Math.round(item.main.temp)}°C</div>
+                            <div class="desc">${item.weather[0].description}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
