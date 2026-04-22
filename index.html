@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weather App | Tech Assessment 2</title>
+    <title>Weather App</title>
     <style>
         * {
             margin: 0;
@@ -36,12 +36,6 @@
             color: white;
             font-size: 2.2rem;
             margin-bottom: 10px;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.15);
-        }
-
-        .header p {
-            color: rgba(255,255,255,0.8);
-            font-size: 0.9rem;
         }
 
         .search-box, .action-buttons {
@@ -59,14 +53,7 @@
             font-size: 16px;
             width: 70%;
             max-width: 400px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             outline: none;
-            transition: all 0.3s ease;
-        }
-
-        #city-input:focus {
-            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-            transform: scale(1.02);
         }
 
         .btn {
@@ -75,15 +62,8 @@
             color: white;
             border: 1px solid rgba(255,255,255,0.3);
             border-radius: 25px;
-            font-size: 16px;
             cursor: pointer;
             backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-        }
-
-        .btn:hover {
-            background: rgba(255,255,255,0.3);
-            transform: translateY(-2px);
         }
 
         .weather-card, .history-card {
@@ -91,45 +71,30 @@
             backdrop-filter: blur(10px);
             padding: 35px;
             border-radius: 20px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
             text-align: center;
             margin-bottom: 30px;
-            border: 1px solid rgba(255,255,255,0.2);
             color: white;
         }
 
         .city-name {
             font-size: 28px;
-            font-weight: 600;
             margin-bottom: 15px;
-            text-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        .weather-icon {
-            width: 120px;
-            height: 120px;
-            margin: 15px auto;
-            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
         }
 
         .temperature {
             font-size: 65px;
-            font-weight: 300;
             margin: 20px 0;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.15);
         }
 
         .weather-desc {
             font-size: 18px;
             text-transform: capitalize;
             margin-bottom: 25px;
-            opacity: 0.9;
         }
 
         .weather-details {
             display: flex;
             justify-content: space-around;
-            margin-top: 20px;
             flex-wrap: wrap;
             gap: 15px;
         }
@@ -138,84 +103,47 @@
             background: rgba(255,255,255,0.1);
             padding: 12px 25px;
             border-radius: 15px;
-            min-width: 110px;
-            backdrop-filter: blur(5px);
         }
 
-        .forecast-title, .history-title {
-            font-size: 22px;
-            font-weight: 600;
-            margin: 30px 0 20px;
+        .forecast-title {
             color: white;
             text-align: center;
-            text-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin: 30px 0 20px;
         }
 
         .forecast-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
             gap: 15px;
-            margin-bottom: 30px;
         }
 
         .forecast-day {
             background: rgba(255,255,255,0.15);
-            backdrop-filter: blur(10px);
             padding: 20px;
             border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
             text-align: center;
-            border: 1px solid rgba(255,255,255,0.2);
             color: white;
-            transition: transform 0.3s ease;
         }
 
-        .forecast-day:hover {
-            transform: translateY(-5px);
-        }
-
-        .forecast-day .date {
-            font-weight: 600;
-            margin-bottom: 10px;
-            opacity: 0.95;
-        }
-
-        .forecast-day img {
-            width: 60px;
-            height: 60px;
-            margin: 10px 0;
-            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.15));
-        }
-
-        .forecast-day .temp {
-            font-size: 18px;
-            font-weight: 500;
-        }
-
-        .forecast-day .desc {
-            font-size: 12px;
-            opacity: 0.8;
-            margin-top: 5px;
-        }
-
-        .map-container {
-            margin-top: 20px;
+        .error-message {
+            color: #ff6b6b;
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
             border-radius: 15px;
-            overflow: hidden;
+            text-align: center;
         }
 
-        #city-map {
-            width: 100%;
-            height: 200px;
-            border: none;
+        .loading {
+            color: white;
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
             border-radius: 15px;
+            text-align: center;
         }
 
         .history-list {
-            text-align: left;
             max-height: 300px;
             overflow-y: auto;
-            padding: 10px;
         }
 
         .history-item {
@@ -225,293 +153,154 @@
             margin-bottom: 10px;
             display: flex;
             justify-content: space-between;
-            align-items: center;
-        }
-
-        .history-actions button {
-            background: rgba(255,100,100,0.3);
-            border: none;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-left: 5px;
-        }
-
-        .error-message {
-            color: #ff6b6b;
-            font-size: 18px;
-            text-align: center;
-            padding: 20px;
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-        }
-
-        .loading {
-            color: white;
-            font-size: 18px;
-            text-align: center;
-            padding: 20px;
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-        }
-
-        @media (max-width: 600px) {
-            .header h1 {
-                font-size: 1.8rem;
-            }
-            .temperature {
-                font-size: 45px;
-            }
-            .city-name {
-                font-size: 22px;
-            }
-            .forecast-container {
-                grid-template-columns: repeat(2, 1fr);
-            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>Weather App | Tech Assessment 2</h1>
-            <p>Built for PM Accelerator AI Engineer Intern Application</p>
+            <h1>Weather App</h1>
         </div>
 
         <div class="search-box">
-            <input type="text" id="city-input" placeholder="Enter city name, e.g., Shanghai, London, New York">
+            <input type="text" id="city-input" placeholder="Enter city name">
             <button class="btn" id="search-btn">Get Weather</button>
             <button class="btn" id="location-btn">Use My Location</button>
         </div>
 
         <div class="action-buttons">
-            <button class="btn" id="history-btn">View Search History</button>
-            <button class="btn" id="export-btn">Export to CSV</button>
+            <button class="btn" id="history-btn">View History</button>
+            <button class="btn" id="export-btn">Export CSV</button>
         </div>
 
         <div id="weather-container">
-            <div class="loading">Enter a city name or use your location to start</div>
+            <div class="loading">Enter a city to start</div>
         </div>
 
         <div id="history-container" style="display: none;">
             <div class="history-card">
-                <div class="history-title">Search History</div>
+                <h3>Search History</h3>
                 <div class="history-list" id="history-list"></div>
             </div>
         </div>
     </div>
 
     <script>
-        const API_KEY = '5fbc8bc590ae855685c7c9d3f3a7f19c';
+        const API_KEY = "da2b4f3539d188e13b340b64ab009c35";
 
-        const cityInput = document.getElementById('city-input');
-        const searchBtn = document.getElementById('search-btn');
-        const locationBtn = document.getElementById('location-btn');
-        const historyBtn = document.getElementById('history-btn');
-        const exportBtn = document.getElementById('export-btn');
-        const weatherContainer = document.getElementById('weather-container');
-        const historyContainer = document.getElementById('history-container');
-        const historyList = document.getElementById('history-list');
-        const body = document.body;
+        const cityInput = document.getElementById("city-input");
+        const searchBtn = document.getElementById("search-btn");
+        const locationBtn = document.getElementById("location-btn");
+        const historyBtn = document.getElementById("history-btn");
+        const exportBtn = document.getElementById("export-btn");
+        const weatherContainer = document.getElementById("weather-container");
+        const historyContainer = document.getElementById("history-container");
+        const historyList = document.getElementById("history-list");
 
-        searchBtn.addEventListener('click', () => {
+        searchBtn.addEventListener("click", () => {
             const city = cityInput.value.trim();
-            if (city) getWeatherData(city);
-            else showError("Please enter a city name");
+            if (city) getWeather(city);
         });
 
-        locationBtn.addEventListener('click', getLocationWeather);
-        historyBtn.addEventListener('click', toggleHistory);
-        exportBtn.addEventListener('click', exportToCSV);
+        cityInput.addEventListener("keypress", (e) => {
+            if (e.key === "Enter") getWeather(cityInput.value.trim());
+        });
 
-        function saveSearchRecord(city, weatherData) {
-            const records = JSON.parse(localStorage.getItem('weatherRecords')) || [];
-            const newRecord = {
-                id: Date.now(),
-                city: city,
-                timestamp: new Date().toLocaleString(),
-                temp: weatherData.main.temp,
-                humidity: weatherData.main.humidity,
-                lat: weatherData.coord.lat,
-                lon: weatherData.coord.lon
-            };
-            records.push(newRecord);
-            localStorage.setItem('weatherRecords', JSON.stringify(records));
-        }
+        locationBtn.addEventListener("click", getLocationWeather);
+        historyBtn.addEventListener("click", toggleHistory);
+        exportBtn.addEventListener("click", exportCSV);
 
-        function getSearchRecords() {
-            return JSON.parse(localStorage.getItem('weatherRecords')) || [];
-        }
-
-        function deleteRecord(id) {
-            let records = getSearchRecords();
-            records = records.filter(r => r.id !== id);
-            localStorage.setItem('weatherRecords', JSON.stringify(records));
-            renderHistory();
-            alert('Record deleted successfully!');
-        }
-
-        function renderHistory() {
-            const records = getSearchRecords();
-            if (records.length === 0) {
-                historyList.innerHTML = '<div class="error-message">No search history found</div>';
-                return;
-            }
-            historyList.innerHTML = records.map(r => `
-                <div class="history-item">
-                    <div>
-                        <strong>${r.city}</strong><br>
-                        ${r.timestamp} | ${r.temp}°C, ${r.humidity}% humidity
-                    </div>
-                    <div class="history-actions">
-                        <button onclick="deleteRecord(${r.id})">Delete</button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function toggleHistory() {
-            if (historyContainer.style.display === 'none') {
-                renderHistory();
-                historyContainer.style.display = 'block';
-            } else {
-                historyContainer.style.display = 'none';
-            }
-        }
-
-        function exportToCSV() {
-            const records = getSearchRecords();
-            if (records.length === 0) {
-                alert('No records to export');
-                return;
-            }
-            let csv = 'ID,City,Timestamp,Temperature,Humidity,Latitude,Longitude\n';
-            records.forEach(r => {
-                csv += `${r.id},${r.city},${r.timestamp},${r.temp},${r.humidity},${r.lat},${r.lon}\n`;
-            });
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'weather_search_history.csv';
-            a.click();
-            window.URL.revokeObjectURL(url);
-        }
-
-        function renderCityMap(lat, lon) {
-            return `
-                <div class="map-container">
-                    <iframe id="city-map" src="https://www.openstreetmap.org/export/embed.html?bbox=${lon-0.1}%2C${lat-0.1}%2C${lon+0.1}%2C${lat+0.1}&layer=mapnik"></iframe>
-                </div>
-            `;
-        }
-
-        function setBackground(weatherMain) {
-            const backgrounds = {
-                'Clear': 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-                'Clouds': 'linear-gradient(135deg, #89ABE3 0%, #CFE8F5 100%)',
-                'Rain': 'linear-gradient(135deg, #4B79A1 0%, #283E51 100%)',
-                'Snow': 'linear-gradient(135deg, #E6DADA 0%, #274046 100%)',
-                'Thunderstorm': 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
-                'Drizzle': 'linear-gradient(135deg, #606c88 0%, #3f4c6b 100%)'
-            };
-            body.style.background = backgrounds[weatherMain] || backgrounds['Clear'];
-        }
-
-        function showError(message) {
-            weatherContainer.innerHTML = `<div class="error-message">❌ ${message}</div>`;
-        }
-
-        function showLoading() {
-            weatherContainer.innerHTML = `<div class="loading">Fetching weather data...</div>`;
-        }
-
-        function handleApiError(err) {
-            showError(err.message || 'Failed to load weather data');
-        }
-
-        function getLocationWeather() {
-            if (!navigator.geolocation) {
-                showError('Geolocation is not supported');
-                return;
-            }
-            showLoading();
-            navigator.geolocation.getCurrentPosition(
-                pos => {
-                    const lat = pos.coords.latitude;
-                    const lon = pos.coords.longitude;
-                    getWeatherByCoords(lat, lon);
-                },
-                err => {
-                    showError('Location access denied. Please allow location permission.');
-                }
-            );
-        }
-
-        async function getWeatherByCoords(lat, lon) {
+        async function getWeather(city) {
+            weatherContainer.innerHTML = "<div class='loading'>Loading...</div>";
             try {
-                const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric&lang=en`);
+                const url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${API_KEY}&units=metric&lang=en`;
+                const res = await fetch(url);
                 const data = await res.json();
-                if (!res.ok) throw new Error(data.message || 'Error');
-                
-                const forecastRes = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`);
-                const forecastData = await forecastRes.json();
-                
-                renderWeather(data, forecastData);
-                saveSearchRecord(data.name, data);
-            } catch (e) {
-                handleApiError(e);
+                if (!res.ok) throw new Error(data.message);
+
+                const fRes = await fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${encodeURIComponent(city)}&appid=${API_KEY}&units=metric`);
+                const fData = await fRes.json();
+
+                showWeather(data, fData);
+                saveHistory(city, data);
+            } catch (err) {
+                weatherContainer.innerHTML = `<div class='error-message'>${err.message}</div>`;
             }
         }
 
-        async function getWeatherData(city) {
-            showLoading();
-            try {
-                const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric&lang=en`);
-                const data = await res.json();
-                if (!res.ok) throw new Error(data.message || 'City not found');
-
-                const forecastRes = await fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${API_KEY}&units=metric`);
-                const forecastData = await forecastRes.json();
-
-                renderWeather(data, forecastData);
-                saveSearchRecord(city, data);
-            } catch (e) {
-                handleApiError(e);
-            }
-        }
-
-        function renderWeather(data, forecast) {
-            setBackground(data.weather[0].main);
+        function showWeather(data, forecast) {
+            const days = forecast.list.filter((_, i) => i % 8 === 0);
             weatherContainer.innerHTML = `
                 <div class="weather-card">
                     <div class="city-name">${data.name}, ${data.sys.country}</div>
-                    <img class="weather-icon" src="https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png">
+                    <img src="https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png">
                     <div class="temperature">${Math.round(data.main.temp)}°C</div>
                     <div class="weather-desc">${data.weather[0].description}</div>
                     <div class="weather-details">
                         <div class="detail-item">Humidity ${data.main.humidity}%</div>
                         <div class="detail-item">Wind ${data.wind.speed} m/s</div>
-                        <div class="detail-item">Feels like ${Math.round(data.main.feels_like)}°C</div>
                     </div>
-                    ${renderCityMap(data.coord.lat, data.coord.lon)}
                 </div>
-
-                <div class="forecast-title">5-Day Forecast</div>
+                <h3 class="forecast-title">5-Day Forecast</h3>
                 <div class="forecast-container">
-                    ${forecast.list.filter((_, i) => i % 8 === 0).map(item => `
+                    ${days.map(d => `
                         <div class="forecast-day">
-                            <div class="date">${new Date(item.dt_txt).toLocaleDateString()}</div>
-                            <img src="https://openweathermap.org/img/wn/${item.weather[0].icon}.png">
-                            <div class="temp">${Math.round(item.main.temp)}°C</div>
-                            <div class="desc">${item.weather[0].description}</div>
+                            <div>${new Date(d.dt_txt).toLocaleDateString()}</div>
+                            <img src="https://openweathermap.org/img/wn/${d.weather[0].icon}.png">
+                            <div>${Math.round(d.main.temp)}°C</div>
                         </div>
                     `).join('')}
                 </div>
             `;
+        }
+
+        function getLocationWeather() {
+            navigator.geolocation.getCurrentPosition(async (p) => {
+                const lat = p.coords.latitude;
+                const lon = p.coords.longitude;
+                const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`);
+                const data = await res.json();
+                const fRes = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`);
+                const fData = await fRes.json();
+                showWeather(data, fData);
+                saveHistory(data.name, data);
+            });
+        }
+
+        function saveHistory(city, data) {
+            const hist = JSON.parse(localStorage.getItem("hist")) || [];
+            hist.push({
+                id: Date.now(),
+                city,
+                temp: data.main.temp,
+                time: new Date().toLocaleString()
+            });
+            localStorage.setItem("hist", JSON.stringify(hist));
+        }
+
+        function toggleHistory() {
+            historyContainer.style.display = historyContainer.style.display === "none" ? "block" : "none";
+            renderHistory();
+        }
+
+        function renderHistory() {
+            const h = JSON.parse(localStorage.getItem("hist")) || [];
+            historyList.innerHTML = h.map(i => `
+                <div class="history-item">
+                    <div>${i.city} • ${i.temp.toFixed(1)}°C • ${i.time}</div>
+                </div>
+            `).join('');
+        }
+
+        function exportCSV() {
+            const h = JSON.parse(localStorage.getItem("hist")) || [];
+            let csv = "City,Temperature,Time\n";
+            h.forEach(i => csv += `${i.city},${i.temp},${i.time}\n`);
+            const blob = new Blob([csv], { type: "text/csv" });
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(blob);
+            a.download = "weather.csv";
+            a.click();
         }
     </script>
 </body>
